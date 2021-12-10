@@ -1,9 +1,9 @@
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-public class View extends JPanel implements ChangeListener
+public class View extends JPanel
 {
     private static final long serialVersionUID = 1L;
 
@@ -14,14 +14,14 @@ public class View extends JPanel implements ChangeListener
     public JButton clearButton;
     public JTextArea textArea;
 
-    private Test1 test = new Test1();
-
-    private final Model model;
-
-    public View(SwingWorkerModel model)
+    public View()
     {
-        this.model = model;
+        initView();
 
+    }
+
+    public void initView()
+    {
         textArea = new JTextArea(15,50);
         textArea.setBorder(BorderFactory.createTitledBorder("Output"));
         textArea.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -42,42 +42,41 @@ public class View extends JPanel implements ChangeListener
         topPanel.add(textField);
         topPanel.add(runButton);
         bottomPanel.add(clearButton);
+
+        JFrame frame = new JFrame("MyUnitTester");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        frame.add(topPanel, BorderLayout.NORTH);
+        frame.add(textArea, BorderLayout.CENTER);
+        frame.add(bottomPanel, BorderLayout.SOUTH);
+
+        frame.getContentPane();
+        frame.pack();
+        frame.setVisible(true);
     }
 
-    public void stateChanged(ChangeEvent event)
+    public void writeListToView(ArrayList<String> list)
     {
-        System.out.println("I stateChanged");
-
-        if(!model.exceptions.isEmpty())
-        {
-            for(String exception : model.exceptions) {
-                textArea.append(exception);
-            }
+        for(String string : list) {
+            textArea.append(string);
         }
-        else {
-            textArea.append("Summary of " + model.test + ":\n");
-            for (String resultMessage : model.resultsMessages) {
-                textArea.append(resultMessage);
-                System.out.println("Händer det här?");
-            }
-            for (String result : model.results) {
-                textArea.append(result);
-            }
-        }
-
-            textArea.append("\n");
-            textField.setText(null);
-            if (!model.exceptions.isEmpty()) {
-                model.exceptions.clear();
-            }
-            if (!model.resultsMessages.isEmpty()) {
-                model.resultsMessages.clear();
-            }
-            if(!model.results.isEmpty())
-            {
-                model.results.clear();
-            }
-            System.out.println("Kört stateChanged");
     }
 
+    public void writeToView(String string)
+    {
+        textArea.append(string);
+    }
+
+    public void setActionListenerTextField(ActionListener actionListener)
+    {
+        textField.addActionListener(actionListener);
+    }
+    public void setActionListenerRunButton(ActionListener actionListener)
+    {
+        runButton.addActionListener(actionListener);
+    }
+    public void setActionListenerClearButton(ActionListener actionListener)
+    {
+        clearButton.addActionListener(actionListener);
+    }
 }
