@@ -80,8 +80,6 @@ public class Controller implements ActionListener, ChangeListener, PropertyChang
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        System.out.println("I stateChanged");
-
         if (!model.exceptions.isEmpty()) {
             view.writeListToView(model.exceptions);
         } else {
@@ -104,7 +102,6 @@ public class Controller implements ActionListener, ChangeListener, PropertyChang
         {
             model.results.clear();
         }
-        System.out.println("Kört stateChanged");
     }
 
     @Override

@@ -17,9 +17,7 @@ public class Model {
         try {
             Class<?> c = Class.forName(test);
             if (TestClass.class.isAssignableFrom(c)) {
-                System.out.println("Class " + c.getName() + " implements TestClass");
                 if (c.getDeclaredConstructor().getParameterAnnotations().length == 0) {
-                    System.out.println("Class " + c.getName() + " has a constructor without parameters");
                     return true;
                 }
             } else {
@@ -59,7 +57,6 @@ public class Model {
             for (Method method : methods) {
                 try {
                     subString = method.getName().substring(0, 4);
-                    System.out.println(subString);
 
                     if ((subString.equals("test")) && (method.getParameterAnnotations().length == 0) && (method.getReturnType().equals(Boolean.TYPE))) {
                         if (setUp != null) {
@@ -68,11 +65,9 @@ public class Model {
                         if (method.invoke(instance).equals(true)) {
                             resultsMessages.add(method.getName() + ": SUCCESS\n");
                             success++;
-                            System.out.println("Success");
                         } else {
                             resultsMessages.add(method.getName() + ": FAIL\n");
                             fail++;
-                            System.out.println("Fail");
                         }
                         if (tearDown != null) {
                             tearDown.invoke(instance);
@@ -101,8 +96,6 @@ public class Model {
             resultsMessages.add("Generated a " + e.getCause() + "\n");
         }
 
-
-        System.out.println("Körs finally?");
         results.add("\n");
         results.add(Integer.toString(success));
         results.add(" tests succeeded\n");
