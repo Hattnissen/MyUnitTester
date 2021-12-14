@@ -1,10 +1,19 @@
+/**
+ * View
+ *
+ * Version: v.1.0
+ *
+ * Author: Johan Hultbäck
+ * CS-user: id18jhk
+ *
+ */
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class View extends JPanel
-{
+public class View extends JPanel {
     private static final long serialVersionUID = 1L;
 
     public JPanel topPanel;
@@ -14,14 +23,11 @@ public class View extends JPanel
     public JButton clearButton;
     public JTextArea textArea;
 
-    public View()
-    {
+    public View() {
         initView();
-
     }
 
-    public void initView()
-    {
+    public void initView() {
         textArea = new JTextArea(15,50);
         textArea.setBorder(BorderFactory.createTitledBorder("Output"));
         textArea.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -55,28 +61,25 @@ public class View extends JPanel
         frame.setVisible(true);
     }
 
-    public void writeListToView(ArrayList<String> list)
-    {
-        for(String string : list) {
+    public void writeToView(String string) {
+        textArea.append(string);
+    }
+
+    public void writeListToView(ArrayList<String> list) {
+        for (String string : list) {
             textArea.append(string);
         }
     }
 
-    public void writeToView(String string)
-    {
-        textArea.append(string);
-    }
-
-    public void setActionListenerTextField(ActionListener actionListener)
-    {
+    public void setActionListenerTextField(ActionListener actionListener) {
         textField.addActionListener(actionListener);
     }
-    public void setActionListenerRunButton(ActionListener actionListener)
-    {
+
+    public void setActionListenerRunButton(ActionListener actionListener) {
         runButton.addActionListener(actionListener);
     }
-    public void setActionListenerClearButton(ActionListener actionListener)
-    {
+
+    public void setActionListenerClearButton(ActionListener actionListener) {
         clearButton.addActionListener(actionListener);
     }
 }

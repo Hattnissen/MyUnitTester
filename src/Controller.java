@@ -7,7 +7,18 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
+/**
+ * Controller
+ * The controller class that handles the communication and
+ *  * distributes information between the view and model
+ *  * classes.
+ *
+ * Version: v.1.0
+ * Author: Johan Hultbäck
+ * CS-user: id18jhk
+ */
 public class Controller implements ActionListener, ChangeListener, PropertyChangeListener {
+
     private final Model model;
     private final View view;
     private ArrayList<ChangeListener> listeners;
@@ -51,12 +62,12 @@ public class Controller implements ActionListener, ChangeListener, PropertyChang
     });
     }
 
-    private void swingWorker()
-    {
-        swingWorker = new SwingWorker()
+    private void swingWorker() {
+        if(swingWorker == null)
         {
+        swingWorker = new SwingWorker() {
             @Override
-            protected Integer doInBackground() {
+            protected Integer doInBackground(){
                 if (model.correctTestClass(view.textField.getText())) {
                     try {
                         model.runTest(view.textField.getText());
@@ -65,18 +76,16 @@ public class Controller implements ActionListener, ChangeListener, PropertyChang
                         e.printStackTrace();
                     }
                 }
-
                 return 0;
             }
         };
         swingWorker.addPropertyChangeListener(this);
         swingWorker.execute();
+        }
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-
-    }
+    public void actionPerformed(ActionEvent e) {}
 
     @Override
     public void stateChanged(ChangeEvent e) {
@@ -91,15 +100,13 @@ public class Controller implements ActionListener, ChangeListener, PropertyChang
         view.writeToView("\n");
         view.textField.setText(null);
 
-        if(!model.exceptions.isEmpty())
-        {
+        if (!model.exceptions.isEmpty()) {
             model.exceptions.clear();
         }
         if (!model.resultsMessages.isEmpty()) {
             model.resultsMessages.clear();
         }
-        if(!model.results.isEmpty())
-        {
+        if (!model.results.isEmpty()) {
             model.results.clear();
         }
     }
@@ -112,17 +119,17 @@ public class Controller implements ActionListener, ChangeListener, PropertyChang
         if (swingWorker != event.getSource()) {
             return;
         }
-        if(swingWorker.isDone())
-        {
+        if (swingWorker.isDone()) {
             swingWorker = null;
         }
 
         ChangeEvent e = new ChangeEvent(this);
-        for (ChangeListener listener : listeners)
+        for (ChangeListener listener : listeners) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     listener.stateChanged(e);
                 }
             });
+        }
     }
 }

@@ -2,6 +2,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+/**
+ * Model
+ *
+ * Version: v.1.0
+ *
+ * Author: Johan Hultbäck
+ * CS-user: id18jhk
+ *
+ */
 public class Model {
     public ArrayList<String> resultsMessages;
     public ArrayList<String> results;
@@ -58,8 +67,8 @@ public class Model {
                 try {
                     subString = method.getName().substring(0, 4);
 
-                    if ((subString.equals("test")) && (method.getParameterAnnotations().length == 0) &&
-                            (method.getReturnType().equals(Boolean.TYPE))) {
+                    if ((subString.equals("test")) && (method.getParameterAnnotations().length == 0)
+                        && (method.getReturnType().equals(Boolean.TYPE))) {
                         if (setUp != null) {
                             setUp.invoke(instance);
                         }

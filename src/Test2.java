@@ -4,14 +4,12 @@ public class Test2 implements TestClass {
     public Test2() {
     }
 
-    public void setUp()
-    {
+    public void setUp() {
         string = new MyString();
         str = "test";
     }
 
-    public void tearDown()
-    {
+    public void tearDown() {
         string = null;
         str = null;
     }
@@ -29,15 +27,13 @@ public class Test2 implements TestClass {
     }
 
     // Test that should fail
-    public boolean testStringNotEqual()
-    {
+    public boolean testStringNotEqual() {
         string.addTestToString();
         return string.getStr().equals(str);
     }
 
     // Test that should fail by exception
-    public boolean testStringNull()
-    {
+    public boolean testStringNull() {
         string.nullString();
         return string.getStr().equals(str);
     }
