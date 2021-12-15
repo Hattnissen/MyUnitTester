@@ -25,7 +25,7 @@ public class Model {
     public boolean correctTestClass(String test) {
         try {
             Class<?> c = Class.forName(test);
-            if (TestClass.class.isAssignableFrom(c)) {
+            if (se.umu.cs.unittest.TestClass.class.isAssignableFrom(c)) {
                 if (c.getDeclaredConstructor().getParameterAnnotations().length == 0) {
                     return true;
                 }
