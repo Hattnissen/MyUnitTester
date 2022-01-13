@@ -13,12 +13,10 @@ import java.util.ArrayList;
  */
 public class Model {
     public ArrayList<String> resultsMessages;
-    public ArrayList<String> results;
     public ArrayList<String> exceptions;
 
     public Model() {
         this.resultsMessages = new ArrayList<>();
-        this.results = new ArrayList<>();
         this.exceptions = new ArrayList<>();
     }
 
@@ -30,18 +28,18 @@ public class Model {
                     return true;
                 }
             } else {
-                System.out.println("Not a real test class");
+                exceptions.add(test + " is not a correct test class\n\n");
                 return false;
             }
         } catch (ClassNotFoundException e) {
-            exceptions.add("The class does not exist");
+            exceptions.add(test + " does not exist\n\n");
         } catch (NoSuchMethodException e) {
-            exceptions.add("The class does not have a constructor");
+            exceptions.add(test + " does not have a valid constructor\n\n");
         }
         return false;
     }
 
-    public void runTest(String test) {
+    public ArrayList<String> runTest(String test) {
         int success = 0;
         int fail = 0;
         int failByException = 0;
@@ -53,6 +51,7 @@ public class Model {
             Method setUp = null;
             Method tearDown = null;
             String subString;
+            resultsMessages.add("Summary of " + test + ":\n");
 
             for (Method method : methods) {
                 if (method.getName().equals("setUp")) {
@@ -106,12 +105,23 @@ public class Model {
             resultsMessages.add("Generated a " + e.getCause() + "\n");
         }
 
-        results.add("\n");
-        results.add(Integer.toString(success));
-        results.add(" tests succeeded\n");
-        results.add(Integer.toString(fail));
-        results.add(" tests failed\n");
-        results.add(Integer.toString(failByException));
-        results.add(" tests failed because of an exception\n");
+        resultsMessages.add("\n");
+        resultsMessages.add(Integer.toString(success));
+        resultsMessages.add(" tests succeeded\n");
+        resultsMessages.add(Integer.toString(fail));
+        resultsMessages.add(" tests failed\n");
+        resultsMessages.add(Integer.toString(failByException));
+        resultsMessages.add(" tests failed because of an exception\n\n");
+
+        return resultsMessages;
+    }
+
+    public void emptyLists() {
+        if (!resultsMessages.isEmpty()) {
+            resultsMessages.clear();
+        }
+        if (!exceptions.isEmpty()) {
+            exceptions.clear();
+        }
     }
 }

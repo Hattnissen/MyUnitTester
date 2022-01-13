@@ -1,7 +1,4 @@
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ModelTest {
@@ -22,7 +19,6 @@ class ModelTest {
     public void listsNotNullTest(){
         model.runTest("Test1");
         assertFalse(model.resultsMessages == null);
-        assertFalse(model.results == null);
         assertFalse(model.exceptions == null);
     }
 /*
