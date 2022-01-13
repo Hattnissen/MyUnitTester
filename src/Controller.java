@@ -1,46 +1,40 @@
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Controller
  * The controller class that handles the communication and
- *  * distributes information between the view and model
- *  * classes.
+ * distributes information between the view and model
+ * classes.
  *
  * Version: v.1.0
  * Author: Johan Hultbäck
  * CS-user: id18jhk
  */
-public class Controller implements ActionListener, ChangeListener, PropertyChangeListener {
+public class Controller implements ActionListener, PropertyChangeListener {
 
     private final Model model;
     private final View view;
-    private ArrayList<ChangeListener> listeners;
+    private ArrayList<String> results;
     private SwingWorker swingWorker;
 
     public Controller(Model model, View view) {
         this.model = model;
         this.view = view;
-        this.listeners = new ArrayList<>();
+        this.results = new ArrayList<>();
         setListeners();
     }
 
-    public void addListener(ChangeListener listener) {
-        listeners.add(listener);
-    }
-
-    private void setListeners()
-    {
+    private void setListeners() {
         SwingUtilities.invokeLater(() -> {
-            view.setActionListenerTextField(e ->{
+            view.setActionListenerTextField(e -> {
                 SwingUtilities.invokeLater(new Runnable() {
-                    synchronized public void run() {
+                    public void run() {
                         swingWorker();
                     }
                 });
@@ -48,7 +42,7 @@ public class Controller implements ActionListener, ChangeListener, PropertyChang
 
             view.setActionListenerRunButton(e -> {
                 SwingUtilities.invokeLater(new Runnable() {
-                    synchronized public void run() {
+                    public void run() {
                         swingWorker();
                     }
                 });
@@ -57,58 +51,35 @@ public class Controller implements ActionListener, ChangeListener, PropertyChang
             view.setActionListenerClearButton(e -> {
                 view.textArea.setText(null);
             });
-
-            addListener(this);
-    });
+        });
     }
 
     private void swingWorker() {
-        if(swingWorker == null)
-        {
-        swingWorker = new SwingWorker() {
-            @Override
-            protected Integer doInBackground(){
-                if (model.correctTestClass(view.textField.getText())) {
-                    try {
-                        model.runTest(view.textField.getText());
-                    } catch (Exception e) {
-                        System.out.println("Exception in doInBackground");
-                        e.printStackTrace();
+        if (swingWorker == null) {
+            swingWorker = new SwingWorker() {
+                @Override
+                protected ArrayList<String> doInBackground() {
+                    ArrayList<String> testResults = new ArrayList<>();
+
+                    if (model.correctTestClass(view.textField.getText())) {
+                        try {
+                            testResults = model.runTest(view.textField.getText());
+                        } catch (Exception e) {
+                            model.exceptions.add("Could not run test");
+                        }
+                    } else {
+                        return model.exceptions;
                     }
+                    return testResults;
                 }
-                return 0;
-            }
-        };
-        swingWorker.addPropertyChangeListener(this);
-        swingWorker.execute();
+            };
+            swingWorker.addPropertyChangeListener(this);
+            swingWorker.execute();
         }
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {}
-
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        if (!model.exceptions.isEmpty()) {
-            view.writeListToView(model.exceptions);
-        } else {
-            view.writeToView("Summary of " + view.textField.getText() + ":\n");
-            view.writeListToView(model.resultsMessages);
-            view.writeListToView(model.results);
-        }
-
-        view.writeToView("\n");
-        view.textField.setText(null);
-
-        if (!model.exceptions.isEmpty()) {
-            model.exceptions.clear();
-        }
-        if (!model.resultsMessages.isEmpty()) {
-            model.resultsMessages.clear();
-        }
-        if (!model.results.isEmpty()) {
-            model.results.clear();
-        }
+    public void actionPerformed(ActionEvent e) {
     }
 
     @Override
@@ -120,16 +91,18 @@ public class Controller implements ActionListener, ChangeListener, PropertyChang
             return;
         }
         if (swingWorker.isDone()) {
-            swingWorker = null;
-        }
+            try {
+                results = (ArrayList<String>) swingWorker.get();
+                view.writeListToView(results);
+                view.textField.setText(null);
+                model.emptyLists();
 
-        ChangeEvent e = new ChangeEvent(this);
-        for (ChangeListener listener : listeners) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    listener.stateChanged(e);
-                }
-            });
+            } catch (InterruptedException e) {
+                model.exceptions.add("Interrupted while getting results from SwingWorker");
+            } catch (ExecutionException e) {
+                model.exceptions.add("Could not retrieve results");
+            }
+            swingWorker = null;
         }
     }
 }
