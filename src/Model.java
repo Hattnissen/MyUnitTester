@@ -1,6 +1,7 @@
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Model
@@ -54,10 +55,10 @@ public class Model {
             resultsMessages.add("Summary of " + test + ":\n");
 
             for (Method method : methods) {
-                if (method.getName().equals("setUp")) {
+                if (Objects.equals(method.getName(), "setUp")) {
                     setUp = method;
                 }
-                if (method.getName().equals("tearDown")) {
+                if (Objects.equals(method.getName(), "tearDown")) {
                     tearDown = method;
                 }
             }
@@ -66,7 +67,7 @@ public class Model {
                 try {
                     subString = method.getName().substring(0, 4);
 
-                    if ((subString.equals("test")) && (method.getParameterAnnotations().length == 0)
+                    if ((Objects.equals(subString, "test")) && (method.getParameterAnnotations().length == 0)
                         && (method.getReturnType().equals(Boolean.TYPE))) {
                         if (setUp != null) {
                             setUp.invoke(instance);
@@ -85,12 +86,15 @@ public class Model {
                 } catch (NullPointerException e) {
                     resultsMessages.add(method.getName() + ": FAIL Generated a " + e.getCause() + "\n");
                     failByException++;
+                    tearDown.invoke(instance);
                 } catch (IllegalAccessException e) {
                     resultsMessages.add(method.getName() + ": FAIL Generated a " + e.getCause() + "\n");
                     failByException++;
+                    tearDown.invoke(instance);
                 } catch (InvocationTargetException e) {
                     resultsMessages.add(method.getName() + ": FAIL Generated a " + e.getCause() + "\n");
                     failByException++;
+                    tearDown.invoke(instance);
                 }
             }
         } catch (ClassNotFoundException e) {

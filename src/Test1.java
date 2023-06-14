@@ -21,9 +21,9 @@ public class Test1 implements TestClass {
 
 	//Test that should succeed
 	public boolean testIncrement() {
-	   myInt.increment();
-	   myInt.increment();
-	   return myInt.value()==2;
+		myInt.increment();
+	    myInt.increment();
+	    return myInt.value()==2;
 
 	}
 	
@@ -45,6 +45,4 @@ public class Test1 implements TestClass {
 	public boolean testFailing() {
 		return false;
 	}
-
-
 }
