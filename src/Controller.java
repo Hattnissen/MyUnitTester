@@ -1,10 +1,5 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Controller
@@ -12,97 +7,52 @@ import java.util.concurrent.ExecutionException;
  * distributes information between the view and model
  * classes.
  *
- * Version: v.1.0
+ * Version: v.2.0
+ *
  * Author: Johan Hultbäck
  * CS-user: id18jhk
  */
-public class Controller implements ActionListener, PropertyChangeListener {
+public class Controller {
 
     private final Model model;
     private final View view;
-    private ArrayList<String> results;
-    private SwingWorker swingWorker;
+    private ArrayList<String> results = new ArrayList<>();
 
-    public Controller(Model model, View view) {
-        this.model = model;
-        this.view = view;
-        this.results = new ArrayList<>();
-        setListeners();
-    }
-
-    private void setListeners() {
+    public Controller() {
+        this.model = new Model();
+        this.view = new View();
         SwingUtilities.invokeLater(() -> {
-            view.setActionListenerTextField(e -> {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        swingWorker();
-                    }
-                });
-            });
-
-            view.setActionListenerRunButton(e -> {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        swingWorker();
-                    }
-                });
-            });
-
-            view.setActionListenerClearButton(e -> {
-                view.textArea.setText(null);
-            });
+            view.initView();
+            setListeners();
         });
     }
 
-    private void swingWorker() {
-        if (swingWorker == null) {
-            swingWorker = new SwingWorker() {
-                @Override
-                protected ArrayList<String> doInBackground() {
-                    ArrayList<String> testResults = new ArrayList<>();
+    private void setListeners() {
+        view.setActionListenerTextField(e -> {
+            new Worker().execute();
+        });
 
-                    if (model.correctTestClass(view.textField.getText())) {
-                        try {
-                            testResults = model.runTest(view.textField.getText());
-                        } catch (Exception e) {
-                            model.exceptions.add("Could not run test");
-                        }
-                    } else {
-                        return model.exceptions;
-                    }
-                    return testResults;
-                }
-            };
-            swingWorker.addPropertyChangeListener(this);
-            swingWorker.execute();
-        }
+        view.setActionListenerRunButton(e -> {
+            new Worker().execute();
+        });
+
+        view.setActionListenerClearButton(e -> {
+            view.textArea.setText(null);
+        });
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
-        if (swingWorker == null) {
-            return;
+    class Worker extends SwingWorker<ArrayList<String>,Void> {
+        @Override
+        protected ArrayList<String> doInBackground() {
+            results = model.runTest(view.textField.getText());
+            return results;
         }
-        if (swingWorker != event.getSource()) {
-            return;
-        }
-        if (swingWorker.isDone()) {
-            try {
-                results = (ArrayList<String>) swingWorker.get();
-                view.writeListToView(results);
-                view.textField.setText(null);
-                model.emptyLists();
 
-            } catch (InterruptedException e) {
-                model.exceptions.add("Interrupted while getting results from SwingWorker");
-            } catch (ExecutionException e) {
-                model.exceptions.add("Could not retrieve results");
-            }
-            swingWorker = null;
+        @Override
+        protected void done() {
+            view.textField.setText(null);
+            view.writeListToView(results);
+            model.emptyResults();
         }
     }
 }

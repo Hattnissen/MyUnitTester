@@ -5,11 +5,15 @@ import java.util.ArrayList;
 
 /**
  * View
+ * The view class that handles the GUI and presents the
+ * information from the Model that the Controller has
+ * communicated.
  *
- * Version: v.1.0
+ * Version: v.2.0
  *
  * Author: Johan Hultbäck
  * CS-user: id18jhk
+ *
  *
  */
 public class View extends JPanel {
@@ -23,7 +27,6 @@ public class View extends JPanel {
     public JTextArea textArea;
 
     public View() {
-        initView();
     }
 
     public void initView() {
@@ -61,10 +64,6 @@ public class View extends JPanel {
         frame.getContentPane();
         frame.pack();
         frame.setVisible(true);
-    }
-
-    public void writeToView(String string) {
-        textArea.append(string);
     }
 
     public void writeListToView(ArrayList<String> list) {
